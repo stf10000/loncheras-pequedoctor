@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Loncheras Reales | Pequedoctor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        oat: '#F4F1EB', // Cream Boho
+                        oatdark: '#E8D8C8',
+                        espresso: '#2D3748', // Dark Text
+                        peach: '#F3D5C5',
+                        mustard: '#F1E0B3',
+                        sage: '#8A9A86', // Sage Green
+                        dustyblue: '#C9DDE5',
+                        terracotta: '#D97757', // Terracotta
+                        terracottahover: '#C06040',
+                        warmwhite: '#FFF9F2'
+                    },
+                    fontFamily: {
+                        outfit: ['"Outfit"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'boho': '0 8px 30px rgba(92, 72, 63, 0.08)',
+                        'boho-inner': 'inset 0 2px 4px rgba(92, 72, 63, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+<!-- Enlaces para que funcione como App y muestre tu logo -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="logo-192.png">
+<meta name="theme-color" content="#D4A373">
+        body {
+            background-color: theme('colors.oat');
+        }
+        /* Ocultar barra de desplazamiento para un look más limpio en web */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Efecto de giro tipo máquina tragamonedas */
+        .spinning-text {
+            filter: blur(1px);
+            opacity: 0.5;
+            transform: translateY(3px) scale(0.98);
+            transition: all 0.05s;
+        }
+        /* Transición suave para las tarjetas cuando se bloquean */
+        .locked-card {
+            opacity: 0.7;
+            transform: scale(0.98);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="font-outfit text-espresso antialiased min-h-screen flex justify-center selection:bg-terracotta selection:text-warmwhite">
+
+    <!-- Contenedor Principal (Mobile-First) -->
+    <div class="max-w-md w-full bg-oat min-h-screen flex flex-col relative shadow-boho sm:border-x border-espresso/10 overflow-hidden">
+        
+        <!-- Cabecera -->
+        <header class="pt-10 pb-6 px-6 text-center shrink-0 z-10">
+            <h1 class="text-3xl font-bold tracking-tight mb-1">
+                Loncheras Reales
+            </h1>
+            <p class="text-sm font-medium opacity-80">Nutrición con amor, sin ultraprocesados</p>
+        </header>
+
+        <main class="flex-1 flex flex-col px-5 pb-8 overflow-y-auto no-scrollbar relative">
+            
+            <!-- Filtro de Edades (Píldoras Elegantes) -->
+            <div class="flex justify-between items-center bg-oatdark/40 p-1.5 rounded-full mb-4 shadow-boho-inner">
+                <button onclick="setAge('1-3a')" id="btn-1-3a" class="age-pill flex-1 text-center text-sm font-semibold py-3 rounded-full transition-all duration-300">
+                    1 a 3 años
+                </button>
+                <button onclick="setAge('4+a')" id="btn-4+a" class="age-pill flex-1 text-center text-sm font-semibold py-3 rounded-full transition-all duration-300">
+                    4+ años
+                </button>
+            </div>
+
+            <!-- Instrucción del Candado -->
+            <p class="text-center text-[13px] font-medium text-espresso/60 mb-6 flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Toca el candado para conservar lo que ya tienes en casa
+            </p>
+
+            <!-- Contenedor de las 4 Ranuras (Slots) -->
+            <div class="flex flex-col gap-4">
+                
+                <!-- 1. Proteína (Dusty Rose / Peach) -->
+                <div id="card-protein" class="bg-peach rounded-3xl p-5 flex items-center justify-between shadow-boho transition-all duration-300">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="opacity-80">
+                            <!-- Icono Huevo/Proteína -->
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path></svg>
+                        </div>
+                        <div class="flex flex-col pr-2 flex-1">
+                            <span class="text-[11px] uppercase tracking-widest font-bold opacity-60 mb-0.5">Proteína</span>
+                            <span id="text-protein" class="text-lg font-bold leading-tight min-h-[1.5rem] flex items-center">--</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleLock('protein')" id="lock-protein" class="shrink-0 p-3 hover:bg-espresso/5 rounded-full transition-colors focus:outline-none">
+                        <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                    </button>
+                </div>
+
+                <!-- 2. Energía (Muted Mustard) -->
+                <div id="card-energy" class="bg-mustard rounded-3xl p-5 flex items-center justify-between shadow-boho transition-all duration-300">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="opacity-80">
+                            <!-- Icono Energía -->
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <div class="flex flex-col pr-2 flex-1">
+                            <span class="text-[11px] uppercase tracking-widest font-bold opacity-60 mb-0.5">Energía</span>
+                            <span id="text-energy" class="text-lg font-bold leading-tight min-h-[1.5rem] flex items-center">--</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleLock('energy')" id="lock-energy" class="shrink-0 p-3 hover:bg-espresso/5 rounded-full transition-colors focus:outline-none">
+                        <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                    </button>
+                </div>
+
+                <!-- 3. Frescura (Sage Green) -->
+                <div id="card-fresh" class="bg-sage rounded-3xl p-5 flex items-center justify-between shadow-boho transition-all duration-300">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="opacity-80">
+                            <!-- Icono Hoja/Fresco -->
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                        </div>
+                        <div class="flex flex-col pr-2 flex-1">
+                            <span class="text-[11px] uppercase tracking-widest font-bold opacity-60 mb-0.5">Frescura</span>
+                            <span id="text-fresh" class="text-lg font-bold leading-tight min-h-[1.5rem] flex items-center">--</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleLock('fresh')" id="lock-fresh" class="shrink-0 p-3 hover:bg-espresso/5 rounded-full transition-colors focus:outline-none">
+                        <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                    </button>
+                </div>
+
+                <!-- 4. Bebida (Dusty Blue) -->
+                <div id="card-drink" class="bg-dustyblue rounded-3xl p-5 flex items-center justify-between shadow-boho transition-all duration-300">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="opacity-80">
+                            <!-- Icono Gota/Bebida -->
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg>
+                        </div>
+                        <div class="flex flex-col pr-2 flex-1">
+                            <span class="text-[11px] uppercase tracking-widest font-bold opacity-60 mb-0.5">Bebida</span>
+                            <span id="text-drink" class="text-lg font-bold leading-tight min-h-[1.5rem] flex items-center">--</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleLock('drink')" id="lock-drink" class="shrink-0 p-3 hover:bg-espresso/5 rounded-full transition-colors focus:outline-none">
+                        <svg class="w-6 h-6 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botón Principal -->
+            <button id="btn-generate" onclick="generateMenu()" class="mt-8 w-full bg-terracotta text-warmwhite font-bold text-xl rounded-2xl py-4 hover:bg-terracottahover transition-all focus:outline-none shadow-boho flex justify-center items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-10.09l5.67-5.67"></path></svg>
+                ¡Generar Lonchera!
+            </button>
+
+            <!-- Banner Promocional Fijo -->
+            <a href="URL_AMAZON_LIBRO" target="_blank" class="mt-6 block bg-espresso/5 border border-espresso/10 rounded-2xl p-4 text-center hover:bg-espresso/10 transition-colors shadow-boho-inner">
+                <p class="text-[13px] font-medium opacity-80 mb-1">¿Transición segura a la comida real?</p>
+                <p class="text-[15px] font-bold text-terracotta">Descubre el libro: De la Lactancia a la mesa</p>
+            </a>
+
+        </main>
+        
+        <!-- Modal Bottom Sheet (Recetas Interactivas) -->
+        <div id="modal-recipe" class="fixed inset-0 z-[60] hidden">
+            <!-- Fondo oscuro -->
+            <div id="recipe-backdrop" class="absolute inset-0 bg-espresso/40 backdrop-blur-[2px] opacity-0 transition-opacity duration-300" onclick="closeRecipe()"></div>
+            <!-- Panel deslizable -->
+            <div id="recipe-sheet" class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-oat rounded-t-3xl shadow-2xl transform translate-y-full transition-transform duration-300 ease-out border-t border-espresso/10">
+                <div class="p-6 pb-12">
+                    <div class="w-12 h-1.5 bg-espresso/20 rounded-full mx-auto mb-6"></div>
+                    <h3 id="recipe-title" class="text-2xl font-bold mb-3 text-terracotta pr-8 leading-tight">--</h3>
+                    <p id="recipe-text" class="text-base text-espresso/90 leading-relaxed font-medium">--</p>
+                    <button onclick="closeRecipe()" class="absolute top-5 right-5 p-2 bg-espresso/5 rounded-full hover:bg-espresso/10 transition-colors">
+                        <svg class="w-5 h-5 text-espresso/60" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Lead Magnet (Fondo Oat) -->
+        <div id="modal-lead" class="fixed inset-0 bg-espresso/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-oat w-full max-w-sm p-8 rounded-3xl relative shadow-2xl">
+                <!-- Botón Cerrar -->
+                <button onclick="closeModal()" class="absolute top-5 right-5 text-espresso/50 hover:text-espresso rounded-full transition-colors">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                
+                <div class="text-terracotta mb-4 flex justify-center">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                
+                <h3 class="text-2xl font-bold mb-2 text-center">Lista de Compras Libre de Ultraprocesados</h3>
+                <p class="text-sm opacity-80 mb-6 text-center font-medium leading-relaxed">
+                    Facilita tus mañanas. Ingresa tu correo y te enviaré mi PDF con los mejores alimentos reales para tu despensa.
+                </p>
+                
+                <!-- Input de correo oscuro con fondo oat oscuro -->
+                <input type="email" placeholder="Tu correo electrónico" class="w-full bg-oatdark border-2 border-espresso/10 rounded-xl p-4 text-base focus:outline-none focus:border-terracotta mb-4 font-medium placeholder-espresso/40 transition-colors shadow-boho-inner" />
+                
+                <button onclick="closeModal()" class="w-full bg-terracotta text-warmwhite font-bold text-lg rounded-xl py-4 hover:bg-terracottahover transition-colors shadow-boho">
+                    Recibir Guía Gratis
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DATOS ESTRUCTURADA (Con Recetas) ---
+        const db = {
+            '1-3a': {
+                protein: [
+                    { name: "Huevo duro entero" },
+                    { name: "Paté de hígado", recipe: "Licúa hígado de pollo cocido con un chorrito de aceite de oliva y caldo de hueso hasta lograr una pasta suave." },
+                    { name: "Albóndigas con hígado oculto", recipe: "Mezcla carne de res de pastoreo molida con 20% de hígado triturado, sal marina y hornea en bolitas." },
+                    { name: "Pollo desmechado (muslo)" },
+                    { name: "Salmón en cuadritos", recipe: "Hornea el salmón con un toque de ghee y sal marina. Desmenúzalo asegurando que no tenga espinas." },
+                    { name: "Huevitos de codorniz" },
+                    { name: "Sardinas majadas", recipe: "Usa sardinas al natural (sin aceites vegetales), májalas con un tenedor y unas gotas de limón." },
+                    { name: "Queso pecorino tierno" }
+                ],
+                energy: [
+                    { name: "Arepitas de yuca", recipe: "Sancocha la yuca, hazla puré sin agua, amasa con un toque de sal marina y asa en el budare." },
+                    { name: "Bastones de batata", recipe: "Corta la batata, imprégnala de aceite de coco derretido y hornea hasta que doren por fuera." },
+                    { name: "Tortitas de avena", recipe: "Licúa hojuelas de avena puras, 1/2 cambur, 1 huevo de pastoreo y un chorrito de agua. Haz tortitas al sartén." },
+                    { name: "Plátano macho asado" },
+                    { name: "Casabe suave mojado" },
+                    { name: "Arepitas con zanahoria", recipe: "Añade zanahoria finamente rallada a tu masa de harina de maíz o puré de tubérculo antes de asar." },
+                    { name: "Muffins de cambur caseros", recipe: "Hornea cambur triturado con huevo, harina de almendras y aceite de coco. Sin endulzantes añadidos." },
+                    { name: "Trocitos de yuca al vapor" }
+                ],
+                fresh: [
+                    { name: "Cuadritos de aguacate" },
+                    { name: "Tomates cherry (en cuartos)", recipe: "Por prevención de asfixia en esta edad, córtalos siempre a lo largo y luego a la mitad (en cuartos)." },
+                    { name: "Arbolitos de brócoli" },
+                    { name: "Cambur en rodajas" },
+                    { name: "Arándanos aplastados", recipe: "Aplasta ligeramente los arándanos con los dedos antes de empacarlos para evitar riesgo de asfixia." },
+                    { name: "Manzana finamente rallada" },
+                    { name: "Mandarina sin semillas" },
+                    { name: "Trocitos de patilla" }
+                ],
+                drink: [
+                    { name: "Agua filtrada" },
+                    { name: "Leche materna o fórmula" },
+                    { name: "Caldo de huesos", recipe: "Hierve huesos de res con un chorrito de vinagre de manzana a fuego muy lento por 12h-24h para extraer colágeno." },
+                    { name: "Infusión de manzanilla fría" },
+                    { name: "Agua de coco natural (poca)" },
+                    { name: "Agua con gotas de naranja" },
+                    { name: "Batido de agua y cambur" },
+                    { name: "Agua con menta suave" }
+                ]
+            },
+            '4+a': {
+                protein: [
+                    { name: "Huevo duro entero" },
+                    { name: "Bolitas de carne de pastoreo" },
+                    { name: "Pinchos de pollo asado" },
+                    { name: "Semillas de calabaza tostadas" },
+                    { name: "Cubos de pecorino maduro" },
+                    { name: "Yogur natural entero", recipe: "Elige yogur natural sin azúcar añadida ni saborizantes. Puedes agregarle tú mismo fresas trituradas." },
+                    { name: "Huevos de codorniz enteros" },
+                    { name: "Paté casero de pollo", recipe: "Procesa pechuga y muslo de pollo cocido con aceite de oliva extra virgen hasta lograr consistencia untable." }
+                ],
+                energy: [
+                    { name: "Casabe crujiente" },
+                    { name: "Arepa asada pequeña" },
+                    { name: "Bastones de yuca frita (en coco)", recipe: "Fríe los bastones de yuca usando exclusivamente aceite de coco o manteca de cerdo, nunca aceites de semillas." },
+                    { name: "Tostones de plátano verde" },
+                    { name: "Granola casera sin miel", recipe: "Tuesta avena, almendras trituradas y coco rallado al horno usando compota de manzana pura para aglutinar." },
+                    { name: "Muffins de manzana y canela" },
+                    { name: "Pan de masa madre real" },
+                    { name: "Palomitas de maíz (hechas en olla)", recipe: "Hazlas en olla tapada con aceite de coco y sal marina. Evita totalmente las de microondas." }
+                ],
+                fresh: [
+                    { name: "Manzana en gajos con piel" },
+                    { name: "Mandarina entera en gajos" },
+                    { name: "Tomates cherry enteros" },
+                    { name: "Zanahoria cruda en bastones" },
+                    { name: "Arándanos enteros" },
+                    { name: "Aceitunas enteras sin hueso" },
+                    { name: "Fresas enteras" },
+                    { name: "Bastones de apio crujiente" }
+                ],
+                drink: [
+                    { name: "Agua fresca" },
+                    { name: "Jugo Verde", recipe: "Licúa media manzana verde, espinaca, pepino, limón y agua. Empácalo sin colar para aprovechar toda la fibra." },
+                    { name: "Agua con rodajas de pepino" },
+                    { name: "Té de flor de Jamaica frío" },
+                    { name: "Leche dorada (Golden milk)", recipe: "Leche entera o de coco tibia con media cucharadita de cúrcuma pura, canela y una pizca de pimienta negra." },
+                    { name: "Batido de cacao puro y agua" },
+                    { name: "Caldo de pollo en termo" },
+                    { name: "Agua filtrada con hielo" }
+                ]
+            }
+        };
+
+        // --- ESTADO DE LA APP ---
+        let currentAge = '1-3a'; // Por defecto
+        let spinCount = 0;
+        let isSpinning = false;
+        let locks = {
+            protein: false,
+            energy: false,
+            fresh: false,
+            drink: false
+        };
+
+        const categories = ['protein', 'energy', 'fresh', 'drink'];
+        
+        // Iconos SVG (Lucide Clean) para los candados
+        const svgUnlocked = `<svg class="w-6 h-6 opacity-70 hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>`;
+        const svgLocked = `<svg class="w-6 h-6 text-espresso" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+
+        // Renderizado del contenido del slot
+        function renderSlotContent(item) {
+            if (item.recipe) {
+                // Genera el HTML con el subrayado y el icono, además de la interacción
+                return `<div class="flex items-center gap-1.5 cursor-pointer group" onclick="showRecipe('${item.name}', '${item.recipe}')">
+                            <span class="underline decoration-dashed decoration-terracotta/50 underline-offset-4 group-hover:decoration-terracotta transition-colors">${item.name}</span>
+                            <svg class="w-4 h-4 text-terracotta shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>`;
+            }
+            return `<span>${item.name}</span>`;
+        }
+
+        // Inicialización
+        document.addEventListener("DOMContentLoaded", () => {
+            setAge(currentAge);
+        });
+
+        // --- LÓGICA PRINCIPAL ---
+
+        function setAge(ageKey) {
+            if(isSpinning) return;
+            currentAge = ageKey;
+            
+            // Actualizar interfaz de píldoras
+            document.querySelectorAll('.age-pill').forEach(btn => {
+                btn.classList.remove('bg-terracotta', 'text-warmwhite', 'shadow-boho');
+                btn.classList.add('text-espresso/70');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${ageKey}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-terracotta', 'text-warmwhite', 'shadow-boho');
+                activeBtn.classList.remove('text-espresso/70');
+            }
+
+            // Generar lonchera inicial silenciosamente para esa edad
+            categories.forEach(cat => {
+                if (!locks[cat]) {
+                    const randomItem = getRandomItem(db[currentAge][cat]);
+                    document.getElementById(`text-${cat}`).innerHTML = renderSlotContent(randomItem);
+                }
+            });
+        }
+
+        function toggleLock(cat) {
+            if (isSpinning) return;
+            
+            locks[cat] = !locks[cat];
+            const btn = document.getElementById(`lock-${cat}`);
+            const card = document.getElementById(`card-${cat}`);
+            
+            if (locks[cat]) {
+                btn.innerHTML = svgLocked;
+                card.classList.add('locked-card');
+            } else {
+                btn.innerHTML = svgUnlocked;
+                card.classList.remove('locked-card');
+            }
+        }
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateMenu() {
+            if (isSpinning) return;
+
+            spinCount++;
+            isSpinning = true;
+            
+            const btn = document.getElementById('btn-generate');
+            const originalBtnContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<span class="opacity-90">Pensando...</span>`;
+
+            let ticks = 0;
+            const maxTicks = 20; // Aproximadamente 1.5 segundos
+            
+            // Aplicar efecto de desenfoque a las que van a girar
+            categories.forEach(cat => {
+                if (!locks[cat]) {
+                    document.getElementById(`text-${cat}`).classList.add('spinning-text');
+                }
+            });
+
+            const spinInterval = setInterval(() => {
+                categories.forEach(cat => {
+                    if (!locks[cat]) {
+                        const tempItem = getRandomItem(db[currentAge][cat]);
+                        document.getElementById(`text-${cat}`).innerHTML = tempItem.name; // Render texto plano mientras gira para mejor rendimiento
+                    }
+                });
+                
+                ticks++;
+                if (ticks >= maxTicks) {
+                    clearInterval(spinInterval);
+                    isSpinning = false;
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnContent;
+                    
+                    // Selección final y renderizado con HTML interactivo
+                    categories.forEach(cat => {
+                        if (!locks[cat]) {
+                            const finalItem = getRandomItem(db[currentAge][cat]);
+                            const textEl = document.getElementById(`text-${cat}`);
+                            textEl.innerHTML = renderSlotContent(finalItem);
+                            textEl.classList.remove('spinning-text');
+                        }
+                    });
+
+                    // Disparar Lead Magnet al 4to intento
+                    if (spinCount === 4) {
+                        setTimeout(showModal, 600); // Pequeña pausa para que vean la lonchera primero
+                    }
+                }
+            }, 70); // Velocidad del giro
+        }
+
+        // --- FUNCIONES DEL MODAL ---
+        function showModal() {
+            const modal = document.getElementById('modal-lead');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal-lead');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // --- FUNCIONES DE RECETAS (Bottom Sheet) ---
+        function showRecipe(title, text) {
+            if (isSpinning) return;
+            document.getElementById('recipe-title').innerText = title;
+            document.getElementById('recipe-text').innerText = text;
+            
+            const modal = document.getElementById('modal-recipe');
+            const backdrop = document.getElementById('recipe-backdrop');
+            const sheet = document.getElementById('recipe-sheet');
+            
+            modal.classList.remove('hidden');
+            // Timeout pequeño para permitir que el display:block se aplique antes de animar
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                sheet.classList.remove('translate-y-full');
+            }, 10);
+        }
+
+        function closeRecipe() {
+            const backdrop = document.getElementById('recipe-backdrop');
+            const sheet = document.getElementById('recipe-sheet');
+            
+            backdrop.classList.add('opacity-0');
+            sheet.classList.add('translate-y-full');
+            
+            setTimeout(() => {
+                document.getElementById('modal-recipe').classList.add('hidden');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
