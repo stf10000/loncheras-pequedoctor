@@ -1,5 +1,6 @@
-const CACHE_NAME = 'pequedoctor-loncheras-v1';
-const ASSETS_TO_CACHE = [
+// sw.js - Service Worker para PWA
+const CACHE_NAME = 'loncheras-pequedoctor-v1';
+const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
@@ -7,20 +8,38 @@ const ASSETS_TO_CACHE = [
   './logo-512.png'
 ];
 
-// Instala el Service Worker y guarda los archivos en caché
-self.addEventListener('install', (event) => {
+self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME)
+      .then(function(cache) {
+        return cache.addAll(urlsToCache);
+      })
   );
 });
 
-// Responde a las peticiones usando el caché si no hay internet
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+    caches.match(event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
+    )
+  );
+});
+
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.filter(function(cacheName) {
+          return cacheName !== CACHE_NAME;
+        }).map(function(cacheName) {
+          return caches.delete(cacheName);
+        })
+      );
     })
   );
 });
